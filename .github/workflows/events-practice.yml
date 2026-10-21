@@ -1,0 +1,26 @@
+name: Events and triggers Practice
+on:
+  push:
+    branches: 
+      - main
+      - 'feature/**'
+    paths:
+      - 'app/**'
+      
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Display trigger information
+        run: |
+          echo "Triggered by: ${{ github.event_name }}"
+          echo "Branch: ${{ github.ref }}"
+          echo "Commit : ${{ github.sha }}"
+      - name: Build application
+        run: |
+          echo "Building the application..."
+          python app/main.py
