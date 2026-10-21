@@ -24,3 +24,6 @@ jobs:
         run: |
           echo "Building the application..."
           python app/main.py
+
+
+          
