@@ -6,6 +6,27 @@ on:
       - 'feature/**'
     paths:
       - 'app/**'
+
+    pull_request:
+      branches:
+        - main
+      types: [opened, synchronize, reopened]
+    
+    workflow_dispatch:
+      inputs:
+        environment:
+          description: "environment to deploy to"
+          required: true
+          type: choice
+          options:
+            - development
+            - staging
+            - production
+      run_tests:
+        description: "Run tests"
+        required: true
+        type: boolean
+        default: true
       
 jobs:
   build:
@@ -24,3 +45,14 @@ jobs:
         run: |
           echo "Building the application..."
           python app/main.py
+  
+  manual-info:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Display manual trigger information
+        run: |
+          echo "Workflow manually triggered."
+          echo "Environment: ${{ github.event.inputs.environment }}"
+          echo "Run tests: ${{ github.event.inputs.run_tests }}"
