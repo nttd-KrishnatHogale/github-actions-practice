@@ -15,6 +15,7 @@ on:
 env:
   APP_NAME: github-actions-demo
   PYTHON_VERSION: "3.11"
+  DEMO_TOKEN: ${{ secrets.DEMO_TOKEN }}
 
 jobs:
 
@@ -28,6 +29,20 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Repository variable
+        run: |
+          echo "Repository Variable: ${{ vars.APP_ENV }}"
+
+      - name: Check secret
+        env:
+          DEMO_TOKEN: ${{ secrets.DEMO_TOKEN }}
+        run: |
+          if [ -n "$DEMO_TOKEN" ]; then
+            echo "Secret is configured"
+          else
+            echo "Secret is missing"
+          fi
 
       - name: Print environment variables
         run: |
@@ -65,6 +80,18 @@ jobs:
         if: ${{ inputs.environment != 'production' }}
         run: |
           echo "Running in non-production environment."
+
+      - name: Run on success
+        if: ${{ success() }}
+        run: echo "Previous steps succeeded"
+
+      - name: Run on failure
+        if: ${{ failure() }}
+        run: echo "A previous step failed"
+
+      - name: Always run
+        if: ${{ always() }}
+        run: echo "This step always executes"
 
   deploy:
     runs-on: ubuntu-latest
