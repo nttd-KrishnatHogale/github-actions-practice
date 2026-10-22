@@ -1,0 +1,83 @@
+name: Variables and Contexts Practice
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Select environment"
+        required: true
+        type: choice
+        options:
+          - dev
+          - staging
+          - production
+
+env:
+  APP_NAME: github-actions-demo
+  PYTHON_VERSION: "3.11"
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    outputs:
+      build-version: ${{ steps.version.outputs.version }}
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Print environment variables
+        run: |
+          echo "Application: $APP_NAME"
+          echo "Python Version: $PYTHON_VERSION"
+
+      - name: Print GitHub context values
+        run: |
+          echo "Repository: ${{ github.repository }}"
+          echo "Actor: ${{ github.actor }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Branch/Ref: ${{ github.ref }}"
+          echo "Runner OS: ${{ runner.os }}"
+
+      - name: Print manual input
+        run: |
+          echo "Selected Environment: ${{ inputs.environment }}"
+
+      - name: Generate build version
+        id: version
+        run: |
+          echo "version=1.0.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+
+      - name: Print step output
+        run: |
+          echo "Build Version: ${{ steps.version.outputs.version }}"
+
+      - name: Production only step
+        if: ${{ inputs.environment == 'production' }}
+        run: |
+          echo "Production environment selected."
+          echo "Running additional production checks..."
+
+      - name: Non-production step
+        if: ${{ inputs.environment != 'production' }}
+        run: |
+          echo "Running in non-production environment."
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+
+      - name: Read output from build job
+        run: |
+          echo "Build version received: ${{ needs.build.outputs.build-version }}"
+
+      - name: Display deployment information
+        run: |
+          echo "Application: ${{ env.APP_NAME }}"
+          echo "Environment: ${{ inputs.environment }}"
+          echo "Version: ${{ needs.build.outputs.build-version }}"
