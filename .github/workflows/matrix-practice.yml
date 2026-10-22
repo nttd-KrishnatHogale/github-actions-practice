@@ -10,25 +10,25 @@ on:
 jobs:
 
   build:
-  runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
-  outputs:
-    version: ${{ steps.version.outputs.app_version }}
+    outputs:
+      version: ${{ steps.version.outputs.app_version }}
 
-  steps:
+    steps:
 
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Generate application version
-      id: version
-      shell: bash
-      run: |
-        echo "app_version=1.0.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+      - name: Generate application version
+        id: version
+        shell: bash
+        run: |
+          echo "app_version=1.0.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
 
-    - name: Display version
-      run: |
-        echo "Application version: ${{ steps.version.outputs.app_version }}"
+      - name: Display version
+        run: |
+          echo "Application version: ${{ steps.version.outputs.app_version }}"
 
   test:
     needs: build
