@@ -1,0 +1,63 @@
+name: Container and Service Practice
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+
+  test:
+
+    runs-on: ubuntu-latest
+
+    container:
+      image: python:3.11
+
+    services:
+
+      postgres:
+        image: postgres:16
+
+        env:
+          POSTGRES_DB: testdb
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpassword
+
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DB_HOST: postgres
+      DB_NAME: testdb
+      DB_USER: testuser
+      DB_PASSWORD: testpassword
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Display Python version
+        run: |
+          python --version
+
+      - name: Install dependencies
+        working-directory: container-practice
+        run: |
+          pip install -r requirements.txt
+
+      - name: Test PostgreSQL connection
+        working-directory: container-practice
+        run: |
+          python app.py
+
+      - name: Run tests
+        working-directory: container-practice
+        run: |
+          pytest
