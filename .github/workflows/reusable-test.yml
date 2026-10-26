@@ -1,0 +1,30 @@
+name: Reusable Python Test
+
+on:
+  workflow_call:
+
+    inputs:
+
+      python-version:
+        description: "Python version"
+        required: true
+        type: string
+
+jobs:
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup project
+        uses: ./.github/actions/python-setup
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: Run tests
+        run: |
+          pytest
