@@ -52,7 +52,7 @@ jobs:
       - name: Intentional failure
         run: |
           echo "Checking deployment file..."
-          cat deployment-config.yml
+          cat monitoring-practice/deployment-config.yml
 
       - name: Generate job summary
         if: ${{ always() }}
