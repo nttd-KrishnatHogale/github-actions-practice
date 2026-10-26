@@ -1,0 +1,50 @@
+name: Troubleshooting Practice
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        working-directory: monitoring-practice
+        run: |
+          pip install -r requirements.txt
+
+      - name: Display environment information
+        run: |
+          echo "Runner OS: ${{ runner.os }}"
+          echo "Repository: ${{ github.repository }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Run ID: ${{ github.run_id }}"
+
+      - name: Run tests
+        working-directory: monitoring-practice
+        run: |
+          pytest
+
+      - name: Intentional failure
+        run: |
+          echo "Checking deployment file..."
+          cat deployment-config.yml
+
+      - name: Generate job summary
+        if: ${{ always() }}
+        run: |
+          echo "# CI Troubleshooting Report" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Repository: ${{ github.repository }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Run Number: ${{ github.run_number }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Build troubleshooting activity completed." >> "$GITHUB_STEP_SUMMARY"
