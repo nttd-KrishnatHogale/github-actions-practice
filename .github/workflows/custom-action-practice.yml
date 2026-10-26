@@ -1,0 +1,32 @@
+name: Custom Action Practice
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup project using custom action
+        id: setup
+        uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.11"
+
+      - name: Display custom action output
+        run: |
+          echo "Python: ${{ steps.setup.outputs.python-version }}"
+
+      - name: Run tests
+        run: |
+          pytest
