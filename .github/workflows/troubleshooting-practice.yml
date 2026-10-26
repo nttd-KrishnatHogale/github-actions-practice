@@ -35,6 +35,20 @@ jobs:
         run: |
           pytest
 
+      - name: Diagnostic information
+        run: |
+          echo "Current directory:"
+          pwd
+
+          echo "Files:"
+          ls -la
+
+          echo "Monitoring directory:"
+          ls -la monitoring-practice
+
+          echo "Environment:"
+          env | sort
+
       - name: Intentional failure
         run: |
           echo "Checking deployment file..."
